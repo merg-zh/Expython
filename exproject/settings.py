@@ -124,3 +124,5 @@ STATICFILES_DIRS = [BASE_DIR / "static_local" ]
 LOGIN_URL = 'mqapp:login'            # ログイン時
 LOGIN_REDIRECT_URL = 'mqapp:home'   # ログイン後
 LOGOUT_REDIRECT_URL = 'mqapp:top'  # ログアウト後
+
+CSRF_TRUSTED_ORIGINS = ['https://expython-production.up.railway.app']
