@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/drawer/3.1.0/css/drawer.min.css">
+
+    <title>{% block title %}{% endblock %}</title>
+
+    <style>
+      body {
+         -webkit-text-size-adjust: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand navbar-dark bg-dark">
+        <div class="container-fluid">
+          <a class="navbar-brand mr-auto" href="/" style="font-size: 1.9vmax;white-space: nowrap;">問題集作成サイト</a>
+            {% if path == 'edit' %}
+            <button type="button" class="btn btn-secondary mx-1" Onclick="Open();">設定</button>
+            {% endif %}
+            {% if path == 'home' %}
+            <a class="navbar-brand text-light" href="/net_post/" style="font-size: 1.4vmax;white-space: nowrap;">みんなの問題集</a>
+            {% endif %}
+            {% if request.user.is_authenticated  %}
+            <ul class="dropdown">
+              <button class="dropdown-toggle btn btn-info float-right" data-toggle="dropdown">{{ request.user }}</button>
+                  <ul class="dropdown-menu">
+                    <button type="button" class="btn btn-primary my-1" data-toggle="modal" data-target="#DlModal" style="white-space: nowrap;">ダウンロード</button>
+                    <button class="btn btn-danger my-1" data-toggle="modal" data-target="#AdModal" style="white-space: nowrap;" onclick="Dn();">アカウント削除</button>
+                    <a href="{% url 'mqapp:logout' %}" class="btn btn-success my-1" style="white-space: nowrap;">ログアウト</a>
+                  </ul>
+            </ul>
+            {% endif %}
+            {% if request.path == '/signin/' %}
+            <a href="{% url 'mqapp:login' %}" class="btn btn-primary" style="font-size: 1vmax;white-space: nowrap;">ログイン</a>
+            {% endif %}
+        </div>
+      </nav>
+
+    <!-- ダウンロードダイアログ -->
+<div class="modal fade" id="DlModal" tabindex="-1" role="dialog" aria-labelledby="basicModal" aria-hidden="true">
+  <div class="modal-dialog">
+    <form action="/home/" method="POST">
+    {% csrf_token %}
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title" >ダウンロード</h4>
+      </div>
+      <div class="modal-body">
+        <h5>相手のユーザーネーム</h5>
+        <input type="text" name="duser" maxlength="100" id="duser" class="form-control">
+        <h5>id</h5>
+        <input type="text" name="did" maxlength="5" id="did" class="form-control">
+      </div>
+      <div class="modal-footer">
+          <button type="submit" class="btn btn-success" >ダウンロード</button>
+          <button type="button" class="btn btn-info" data-dismiss="modal">閉じる</button>
+      </div>
+    </div>
+    </form>
+  </div>
+</div>
+
+<!-- アカウント削除 -->
+<div class="modal fade" id="AdModal" tabindex="-1" role="dialog" aria-labelledby="basicModal" aria-hidden="true">
+  <div class="modal-dialog">
+  <form action="/" method="POST">
+  {% csrf_token %}
+  <input type="text" name = "un" id="un" value= {{ request.user }}>
+  <div class="modal-content">
+      <div class="modal-header">
+          <h4 class="modal-title" >本当にアカウントを削除しますか？</h4>
+      </div>
+      <div class="modal-footer">
+          <button type="submit" class="btn btn-danger" >アカウント削除</button>
+          <button class="btn btn-info" data-dismiss="modal">閉じる</button>
+      </div>
+  </div>
+  </form>
+  </div>
+</div>
+
+<script>
+  let un = document.getElementById('un');
+  un.style.display = "none";
+</script>
+<script src="https://code.jquery.com/jquery-3.5.0.min.js"integrity="sha256-xNzN2a4ltkB44Mc/Jz3pT4iU1cmeR0FkXs4pru/JxaQ="crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/iScroll/5.1.3/iscroll.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/drawer/3.1.0/js/drawer.min.js"></script>
+
+
+    {% block content %}{% endblock %}
+    
+  </body>
+</html>

@@ -1,0 +1,375 @@
+{% extends "mqapp/base.html" %}
+{% block title %}編集{% endblock %}
+
+{% block content %}
+<a href="#up" class="link-primary" style="font-size: 1.5vmax;position:fixed;left:2vmax;top:85vh;">最上部</a>
+<a href="#do" class="link-primary" style="font-size: 1.5vmax;position:fixed;left:2vmax;top:90vh;">最下部</a>
+<div class="container">
+    <div class="card mt-3 mx-auto" style="width: 60vw;">
+        <form action="/edit/{{ en }}" method="POST">
+            {% csrf_token %}
+            <input type = "text" id = "data_text" name = "data_text">
+        <div class="card-header" id="up">
+            
+            <div class="row">
+                <div class="col-md-12 col-sm-12">
+                    <h2 style="font-size: 2vmax;" id="tt">{{en}}</h2>
+                </div>
+                <div class="col-md-12 col-sm-12 text-right">
+                    <button type="submit" class="btn btn-success mx-1" id="save">保存</button>
+                    <a href="/home/" class="btn btn-secondary mx-1" >戻る</a>
+                </div>
+            </div>   
+        </div>
+        </form>
+        <div class="card-body">
+            <table class="table table-bordered" id="tb" style="font-size: 1vmax;">
+                <thead class="thead-dark">
+                <tr>
+                    <th>問題</th>
+                    <th>解答</th>
+                </tr>
+                </thead>
+                <tbody>
+                    
+                </tbody>
+            </table>
+        </div>
+        <div class="card-footer">
+            <div class="row">
+                <div class="col-sm-12 col-md-8">
+                    <input type="text" class="form-control" id="it">
+                </div>
+                <div class="col-sm-12 col-md-4 text-right">
+                    <input type="button" class="btn btn-info" style="white-space: nowrap;" value="入力" onclick="Append()">
+                    <input type="button" class="btn btn-info" style="white-space: nowrap;" value="取り消し" onclick="Return()">
+                </div>
+            </div>
+        </div>
+        <div class="card h-100 d-flex flex-column" id = "do">
+            <div class="row">
+                <div class="col-md-6 col-sm-6">
+                    {% if pf == 'false' %}
+                    <button class="btn btn-success" data-toggle="modal" data-target="#PostModal" onclick="Post_f();">投稿</button>
+                    {% elif pf == 'true' %}
+                    <button class="btn btn-success" data-toggle="modal" data-target="#PostModal" onclick="Post_f();">投稿内容更新</button>
+                    <button class="btn btn-danger" data-toggle="modal" data-target="#NotPostModal" onclick="NotPost_f();">投稿削除</button>
+                    {% endif %}
+                </div>
+                <div class="col-md-6 col-sm-6 text-right">
+                    <h5>id：{{ id_text }}</h5>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+</div>
+<h1 id="ft">{{ tab }}</h1>
+<h1 id="typedata">{{ type }}</h1>
+
+<!-- 投稿ダイアログ -->
+<form action=" " method="POST">
+{% csrf_token %}
+<div class="modal fade" id="PostModal" tabindex="-1" role="dialog" aria-labelledby="basicModal" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        {% if pf == 'false' %}
+        <h4 class="modal-title" >本当に投稿しますか？</h4>
+        {% elif pf == 'true' %}
+        <h4 class="modal-title" >本当に更新しますか？</h4>
+        {% endif %}
+      </div>
+      <div class="modal-footer">
+        {% if pf == 'false' %}
+        <button type="submit" class="btn btn-success" >投稿</button>
+        {% elif pf == 'true' %}
+        <button type="submit" class="btn btn-success" >更新</button>
+        {% endif %}
+          
+          <button type="button" class="btn btn-info" data-dismiss="modal">閉じる</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 投稿削除ダイアログ -->
+<div class="modal fade" id="NotPostModal" tabindex="-1" role="dialog" aria-labelledby="basicModal" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title" >本当に投稿を削除しますか？</h4>
+      </div>
+      <div class="modal-footer">
+          <button type="submit" class="btn btn-danger" >削除</button>
+          <button type="button" class="btn btn-info" data-dismiss="modal">閉じる</button>
+      </div>
+    </div>
+  </div>
+</div>
+<input type = "text" name = "pst" id = "pst">
+</form>
+
+<form action=" " method="post">
+    {% csrf_token %}
+<body class="drawer drawer--left">
+	<header role="banner">
+		<nav class="drawer-nav" role="navigation">
+			<ul class="drawer-menu">
+				<li><h2 class="drawer-brand">設定</h2></li>
+                <li><h6 class="text-dark">タイトル</h6></li>
+				<li><input type="text" id = "title_text" name = "h_title" class="form-control"></li>
+                <br>
+                <div class="form-group">
+                    <label class="control-label text-dark" style="font-size: 20px;">解き方</label>
+                    <div class="form-check">
+                      <input class="form-check-input" type="radio" name="radio1" id="radio1" onclick="radio(this);" checked>
+                      <label class="form-check-label" for="radio1">両方</label>
+                    </div>
+                    <div class="form-check">
+                      <input class="form-check-input" type="radio" name="radio2" onclick="radio(this);" id="radio2">
+                      <label class="form-check-label" for="radio2">記述限定</label>
+                    </div>
+                    <div class="form-check">
+                      <input class="form-check-input" type="radio" name="radio3" onclick="radio(this);" id="radio3">
+                      <label class="form-check-label" for="radio3">〇✕限定</label>
+                    </div>
+                  </div>
+                 <br>
+                 <li><button type="submit" class="btn btn-success">変更</button></li>
+			</ul>
+		</nav>
+	</header>
+</body>
+</form>
+
+<script type="text/javascript">
+    tyda = document.getElementById('typedata');
+    tyda.style.display = 'none';
+
+    $(document).ready(function(){
+        $('.drawer').drawer();
+    });
+
+    function Open(){
+        document.getElementById('title_text').value = document.getElementById('tt').textContent;
+        $('.drawer').drawer('open');
+    }
+
+    radio1 = document.getElementById('radio1');
+    radio2 = document.getElementById('radio2');
+    radio3 = document.getElementById('radio3');
+
+    switch(tyda.textContent){
+        case '2':
+            radio1.checked = false;
+            radio2.checked = true;
+        break;
+        case '3':
+            radio1.checked = false;
+            radio3.checked = true;
+        break;
+    }
+
+
+    function radio(element){
+        switch(element.id){
+            case 'radio1':
+                radio2.checked = false;
+                radio3.checked = false;
+            break;
+            case 'radio2':
+                radio1.checked = false;
+                radio3.checked = false;
+            break;
+            case 'radio3':
+                radio1.checked = false;
+                radio2.checked = false;
+            break;
+        }
+    }
+    let table = document.getElementById('tb');
+    let text = document.getElementById('it');
+    let s = 0, n = 0;
+    let k1 = [];
+    let k2 = [];
+    let tt1,tt2;
+
+    let dat = document.getElementById("data_text");
+    dat.style.display = 'none';
+
+    let pst = document.getElementById('pst');
+    pst.style.display = 'none';
+    function Append(){
+        if(s == 0){
+            k1.push(text.value);
+            s = 1;
+            n += 1;
+            
+            let tr = document.createElement('tr');
+            var tr_s = table.appendChild(tr);
+            let td = document.createElement('td');
+            td.setAttribute('id',n);
+            tt1 = tr_s.appendChild(td);
+            let td2 = document.createElement('td');
+            td2.setAttribute('id',n);
+            tt2 = tr_s.appendChild(td2);
+
+            let input_text = document.createElement('input');
+            input_text.setAttribute('oninput','InputChange(this)');
+            input_text.setAttribute('class','form-control');
+            input_text.setAttribute('value',text.value);
+            input_text.setAttribute('id','k1_'+n);
+            input_text.setAttribute('style','font-size:1.6vmax')
+            tt1.appendChild(input_text);
+        }
+        else if(s == 1){
+            k2.push(text.value);
+            s = 0;
+
+            let input_text = document.createElement('input');
+            input_text.setAttribute('oninput','InputChange(this)');
+            input_text.setAttribute('class','form-control');
+            input_text.setAttribute('value',text.value);
+            input_text.setAttribute('id','k2_'+n);
+            input_text.setAttribute('style','font-size:1.6vmax')
+            tt2.appendChild(input_text);
+        }
+        text.value = "";
+
+        let ka = k1.join(',');
+        let ka2 = ka.replace(/,/g, '$');
+        let ka3 = k2.join(',');
+        let ka4 = ka3.replace(/,/g, '$');
+        dat.value = ka4 + "@" + ka2;
+    }
+
+    function Return(){
+        if(s == 0 && k1.length != 0){
+            s = 1;
+            k2.splice(n - 1, 1);
+            document.getElementById('k2_' + tt2.id).remove();
+        }
+        else if(s == 1 && k1.length != 0){
+            n -= 1;
+            s = 0;
+            k1.splice(n ,1);
+            var row_num = table.rows.length;
+            document.getElementById('k1_' + tt1.id).remove();
+            if(row_num > 1){
+                table.deleteRow(row_num - 1);
+            }
+        }
+
+        tt1 = table.rows[n].cells[0];
+        tt2 = table.rows[n].cells[1];
+
+        let ka = k1.join(',');
+        let ka2 = ka.replace(/,/g, '$');
+        let ka3 = k2.join(',');
+        let ka4 = ka3.replace(/,/g, '$');
+        dat.value = ka4 + "@" + ka2;
+    }
+
+    function InputChange(ele){
+        let id = (ele.id).split('_');
+        if(id[0] == 'k1'){
+            k1[id[1] - 1] = ele.value;
+        }
+        else{
+            k2[id[1] - 1] = ele.value;
+        }
+
+        let ka = k1.join(',');
+        let ka2 = ka.replace(/,/g, '$');
+        let ka3 = k2.join(',');
+        let ka4 = ka3.replace(/,/g, '$');
+        dat.value = ka4 + "@" + ka2;
+    }
+
+    function Init(){
+        let ft = document.getElementById('ft').textContent;
+        let result = ft.split('@');
+        let kr1 = result[1].split('$');
+        let kr2 = result[0].split('$');
+        
+        for(let i = 0; i < kr1.length; i++){
+            if(s == 0){
+                k1.push(kr1[i]);
+                s = 1;
+                n += 1;
+
+                let tr = document.createElement('tr');
+                var tr_s = table.appendChild(tr);
+                let td = document.createElement('td');
+                td.setAttribute('id',n);
+                tt1 = tr_s.appendChild(td);
+                let td2 = document.createElement('td');
+                td2.setAttribute('id',n);
+                tt2 = tr_s.appendChild(td2);
+    
+                let input_text = document.createElement('input');
+                input_text.setAttribute('oninput','InputChange(this)');
+                input_text.setAttribute('class','form-control');
+                input_text.setAttribute('value',kr1[i]);
+                input_text.setAttribute('id','k1_'+n);
+                input_text.setAttribute('style','font-size:1.6vmax')
+                tt1.appendChild(input_text);
+            }
+            if(s == 1 && i < kr2.length){
+                k2.push(kr2[i]);
+                s = 0;
+                let input_text = document.createElement('input');
+                input_text.setAttribute('oninput','InputChange(this)');
+                input_text.setAttribute('class','form-control');
+                input_text.setAttribute('value',kr2[i]);
+                input_text.setAttribute('id','k2_'+n);
+                input_text.setAttribute('style','font-size:1.6vmax')
+                tt2.appendChild(input_text);
+            }
+            else{
+                k2.push(null)
+                s = 0;
+                let input_text = document.createElement('input');
+                input_text.setAttribute('oninput','InputChange(this)');
+                input_text.setAttribute('class','form-control');
+                input_text.setAttribute('value','null');
+                input_text.setAttribute('id','k2_'+n);
+                input_text.setAttribute('style','font-size:1.6vmax')
+                tt2.appendChild(input_text);
+            }
+        }
+
+        let ka = k1.join(',');
+        let ka2 = ka.replace(/,/g, '$');
+        let ka3 = k2.join(',');
+        let ka4 = ka3.replace(/,/g, '$');
+        dat.value = ka4 + "@" + ka2;
+    }
+
+    document.getElementById('ft').style.visibility = 'hidden';
+
+    if(document.getElementById('ft').textContent != 'null'){
+        Init();
+    }
+
+    document.body.addEventListener('keydown', event =>{
+        if(event.key == 'Enter' && text.value != ''){
+            Append();
+        }
+
+        if(event.key == 'z' && event.metaKey || event.key == 'z' && event.ctrlKey){
+            Return();
+        }
+    });
+
+    function Post_f(){
+        pst.value = 'ok';
+    }
+    function NotPost_f(){
+        pst.value = 'no';
+    }
+    
+</script>
+
+{% endblock %}

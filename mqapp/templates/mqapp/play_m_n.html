@@ -1,0 +1,152 @@
+{% extends "mqapp/base.html" %}
+{% block title %}〇✕{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="card mt-3 mx-auto" style="width: 60vw;">
+        <div class="card-header">
+            <div class="row">
+                <div class="col-md-10 col-sm-12 my-auto">
+                    <h2 style="font-size: 2vmax;">{{en}}</h2>
+                </div>
+                <div class="col-md-2 col-sm-12 my-auto">
+                    <a href="/net_post/" class="btn btn-secondary float-right" style="white-space: nowrap;" >戻る</a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <h2 id="nm" class="text-center" style="font-size: 1.7vmax;"></h2>
+            <h3 id="question" style="font-size: 3.4vmax;"></h3>
+            <br>
+            <h4 id="qa" class="text-danger" style="font-size: 2vmax;">答え</h4>
+            <h4 id="qa2" style="font-size: 2.5vmax;"></h4>
+            <table class="table table-bordered" id="tb">
+                <thead class="thead-dark">
+                <tr>
+                    <th>間違えた問題</th>
+                    <th>解答</th>
+                </tr>
+                </thead>
+                <tbody>
+                    
+                </tbody>
+            </table>
+        </div>
+        <div class="card-footer">
+            <input type="button" style="white-space: nowrap;" class="btn btn-info float-left" value="答えを表示" onclick="Answer()" id = 'kota'>
+            <input type="button" style="white-space: nowrap;" class="btn btn-danger float-left mx-2" value="　〇　" onclick="Choose(this)" id = 'te'>
+            <input type="button" style="white-space: nowrap;" class="btn btn-primary float-left mx-2" value="　✕　" onclick="Choose(this)" id = 'fe'>
+            <input type="button" style="white-space: nowrap;" class="btn btn-success float-left" value="次の問題" onclick="Question()" id = 'nb'>
+        </div>
+    </div>
+</div>
+
+<h1 id="ft">{{ tab }}</h1>
+
+<script>
+    let EndFlag = false;
+    let tb = document.getElementById('tb');
+    tb.style.visibility = 'hidden';
+    let ft = document.getElementById('ft').textContent;
+    document.getElementById('ft').style.visibility = 'hidden';
+    let result = ft.split('@');
+    let kr1 = result[1].split('$');
+    let kr2 = result[0].split('$');
+    let miss = [];
+    let miss2 = [];
+
+    let text = document.getElementById('question');
+    let r = 0;
+    let rk = 0;
+
+    let s = 0,so = 0;
+
+    let qa = document.getElementById("qa");
+    let qa2 = document.getElementById("qa2");
+    let kota = document.getElementById("kota");
+    let te = document.getElementById("te");
+    let fe = document.getElementById("fe");
+    let nb = document.getElementById("nb");
+
+    te.style.display = 'none';
+    fe.style.display = 'none';
+
+    if(kr1.length > kr2.length){
+        kr2.push('null');
+    }
+
+    function Question(){
+        nm.innerHTML = '残り' + kr1.length + '問';
+        kota.style.display = 'block';
+        qa.style.display = "none";
+        qa2.style.display = "none";
+        nb.style.display = 'none';
+        if (kr1.length > 1){
+            while(r == rk){
+                r = Math.floor(Math.random() * kr1.length);
+            }
+        }
+        else if(kr1.length == 1){
+            r = Math.floor(Math.random() * kr1.length);
+        }
+        else if(kr1.length == 0){
+            nm.style.display = 'none';
+            tb.style.visibility = 'visible';
+            document.getElementById('kota').style.visibility = 'hidden';
+            EndFlag = true;
+
+            text.innerHTML = '終了';
+            nm.style.display = 'none';
+            for(let i = 0; i < miss.length; i++){
+                var row = tb.insertRow(-1);
+                tt1 = row.insertCell(0);
+                tt2 = row.insertCell(1);
+                tt1.innerHTML = miss[i];
+                tt2.innerHTML = miss2[i];
+            }
+            return
+        }
+        
+        rk = r;
+        text.innerHTML = kr1[r];
+
+    }
+
+    
+
+    function Answer(){
+        kota.style.display = 'none';
+        qa.style.display = "block";
+        qa2.style.display = "block";
+        te.style.display = 'block';
+        fe.style.display = 'block';
+        qa2.innerHTML = kr2[r];
+        s = 2;
+    }
+
+    function Choose(ele){
+        nb.style.display = 'block';
+        te.style.display = 'none';
+        fe.style.display = 'none';
+        if(ele.id == 'te'){
+            kr1.splice(r,1);
+            kr2.splice(r,1);
+        }
+        else{
+            let flag = false;
+            for(let i = 0; i < miss.length; i++){
+                if(miss[i] == kr1[r]){
+                    flag = true;
+                }
+            }
+            if(flag == false){
+                miss.push(kr1[r]);
+                miss2.push(kr2[r]);
+            }
+        }
+        Question();
+    }
+
+    Question();
+    </script>
+{% endblock %}

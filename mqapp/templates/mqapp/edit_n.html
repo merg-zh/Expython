@@ -1,0 +1,95 @@
+{% extends "mqapp/base.html" %}
+{% block title %}中身{% endblock %}
+
+{% block content %}
+<a href="#up" class="link-primary" style="font-size: 1.5vmax;position:fixed;left:2vmax;top:85vh;">最上部</a>
+<a href="#do" class="link-primary" style="font-size: 1.5vmax;position:fixed;left:2vmax;top:90vh;">最下部</a>
+
+<div class="container">
+    <div class="card mt-3 mx-auto" style="width: 60vw;">
+        <div class="card-header" id="up">
+            <div class="row">
+                <div class="col-md-12 col-sm-12">
+                    <h2 style="font-size: 2vmax;">{{en}}</h2>
+                </div>
+                <div class="col-md-12 col-sm-12 text-right">
+                    <a href="/net_post/" class="btn btn-secondary mx-1" >戻る</a>
+                </div>
+            </div>   
+        </div>
+        <div class="card-body">
+            <table class="table table-bordered" id="tb" style="font-size: 1vmax;">
+                <thead class="thead-dark">
+                <tr>
+                    <th>問題</th>
+                    <th>解答</th>
+                </tr>
+                </thead>
+                <tbody>
+                    
+                </tbody>
+            </table>
+        </div>
+        <div class="card h-100 d-flex flex-column" id = "do">
+            <div class="row">
+                <div class="col-md-6 col-sm-6">
+                    <button class="btn btn-success" data-toggle="modal" data-target="#PostModal" onclick="Post_f();">ダウンロード</button>
+                </div>
+                <div class="col-md-6 col-sm-6 text-right">
+                    <h5>id：{{ id_text }}</h5>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<h1 id="ft">{{ tab }}</h1>
+
+<!-- ダウンロード -->
+<form action=" " method="POST">
+{% csrf_token %}
+<div class="modal fade" id="PostModal" tabindex="-1" role="dialog" aria-labelledby="basicModal" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title" >本当にダウンロードしますか？</h4>
+      </div>
+      <div class="modal-footer">
+          <button type="submit" class="btn btn-success" >ダウンロード</button>
+          <button type="button" class="btn btn-info" data-dismiss="modal">閉じる</button>
+      </div>
+    </div>
+  </div>
+</div>
+<input type = "text" name = "idx" id = "idx" value="{{ idx }}">
+</form>
+
+<script type="text/javascript">
+    let table = document.getElementById('tb');
+    document.getElementById('idx').style.display='none';
+    let tt1,tt2;
+
+    function Init(){
+        let ft = document.getElementById('ft').textContent;
+        let result = ft.split('@');
+        let kr1 = result[1].split('$');
+        let kr2 = result[0].split('$');
+        
+        for(let i = 0; i < kr1.length; i++){
+            let tr = document.createElement('tr');
+            var tr_s = table.appendChild(tr);
+            let td = document.createElement('td');
+            tt1 = tr_s.appendChild(td);
+            let td2 = document.createElement('td');
+            tt2 = tr_s.appendChild(td2);
+            tt1.innerHTML = kr1[i];
+            tt2.innerHTML = kr2[i];
+        }
+    }
+
+    document.getElementById('ft').style.visibility = 'hidden';
+
+    Init();
+    
+</script>
+
+{% endblock %}

@@ -1,0 +1,327 @@
+{% extends "mqapp/base.html" %}
+{% block title %}ホーム{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>{{cwd}}</h1>
+    <div class="card mt-3 mx-auto" style="width: 60vw;">
+        <div class="card-header">
+            <div class="row">
+                <div class="col-md-10">
+                    <h4 style="font-size: 2vmax;white-space: nowrap;">作成した問題集</h4>
+                </div>
+                <div class="col-md-2">
+                    <button type="button" style=" padding-left:4px;padding-right:4px; white-space: nowrap;" class="btn btn-primary float-right" data-toggle="modal" data-target="#CreateModal">新規作成</button>
+                </div>
+            </div>
+        </div>
+        <div class="card-body bg-light" id="oya">
+                {% for bt in ul %}
+                <div class="card my-4" draggable="true" id="card{{ forloop.counter0 }}">
+                    <div class="card-body" id = "child">
+                        <div class="row" id = "child">
+                            <div class="col-md-12 col-sm-12" id = "child">
+                                <h6 style="font-size: 1.7vmax;" id = "child">{{ bt }}</h6>
+                            </div>
+                            <div class = "col-md-12 col-sm-12" id = "child">
+                                <ul class="dropdown" id = "child">
+                                    <button  id = "child" class="dropdown-toggle btn btn-outline-primary float-right" data-toggle="dropdown">メニュー</button>
+                                        <ul class="dropdown-menu">
+                                            <a class="text-info mx-1" href="/play/{{ bt }}/t" id="buta{{forloop.counter0}}">記述</a>
+                                            <a class="text-info mx-1" href="/play/{{ bt }}/m" id="kame{{forloop.counter0}}">〇✕</a>
+                                            <a href="/edit/{{ bt }}" class="btn btn-success">編集</a>
+                                            <button class="btn btn-danger" data-toggle="modal" data-target="#DeleteModal" onclick="Send(this);">削除</button>
+                                        </ul>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+        </div>
+        <div class="card-body bg-light" id="oya2"></div>
+    </div>
+</div>
+
+<!-- 新規作成ダイアログ -->
+<div class="modal fade" id="CreateModal" tabindex="-1" role="dialog" aria-labelledby="basicModal" aria-hidden="true">
+    <div class="modal-dialog">
+        <form action="/home/" method="POST">
+        {% csrf_token %}
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" >問題集新規作成</h4>
+            </div>
+            <div class="modal-body">
+                <h4>タイトル</h4>
+                <input type="text" name="title" maxlength="20" required id="id_title" id="title" class="form-control">
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-success" >新規作成</button>
+                <button type="button" class="btn btn-info" data-dismiss="modal">閉じる</button>
+            </div>
+        </div>
+        </form>
+    </div>
+</div>
+
+<!--　削除ダイアログ　-->
+<form action="/home/" method="POST">
+{% csrf_token %}
+<input type="text" id="ds" name="ds">
+<div class="modal fade" id="DeleteModal" tabindex="-1" role="dialog" aria-labelledby="basicModal" aria-hidden="true">
+    <div class="modal-dialog">
+        
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="text"></h4>
+            </div>
+            <div class="modal-body">
+                <button type="submit" class="btn btn-danger" >削除</button>
+                <button type="button" class="btn btn-info" data-dismiss="modal">戻る</button>
+            </div>
+        </div>
+    </div>
+</div>
+</form>
+
+<form id="fr" action="" method="POST">
+    {% csrf_token %}
+    <input type="text" id="kore" required>
+    <button type="submit" id="fr2"></button>
+</form>
+
+<p id="lcc">{{ lc }}</p>
+<p id="ttt">{{ type }}</p>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script type="text/javascript">
+    document.getElementById('fr2').style.display = 'none';
+    document.getElementById('ds').style.display = 'none';
+    document.getElementById('kore').style.display = 'none';
+    ttt = document.getElementById('ttt');
+    ttt.style.display = 'none';
+    ttt = ttt.textContent.split(',');
+
+    let lc = document.getElementById('lcc');
+    let lcn = lc.textContent.split(',');
+    lc.style.display = 'none';
+
+    list_card = [];
+    let oya = document.getElementById('oya');
+    let oya2 = document.getElementById('oya2');
+
+    if(oya.childElementCount > 0){
+        for(let i = 0; i < oya.childElementCount; i++){
+            if(ttt[i] == '2'){
+                document.getElementById('kame'+String(i)).style.display = 'none';
+            }
+            else if(ttt[i] == '3'){
+                document.getElementById('buta'+String(i)).style.display = 'none';
+            }
+        }
+    }
+
+    let list_t = [];
+    if(oya.childElementCount > 0 && lc.textContent != "," && lc.textContent != ""){
+        for(let i = 0; i < oya.childElementCount; i++ ){
+            list_card.push([oya.children[i].id,lcn[i]]);
+        }
+        var t = oya.children;
+        for(let i = 0; i < oya.childElementCount; i++){
+            list_t.push(oya.children[i].id);
+        }
+        let vv = oya.childElementCount;
+        let div_list = [];
+        for(let ia = 0; ia < vv; ia++){
+            let i3 = 0;
+            for(let ii = 0; ii < vv; ii++){
+                if(list_card[ii][1] == ia){
+                    div_list.push(t[ii]);
+                }
+            }
+        }
+        
+        for(let i = 0; i < vv ; i++){
+            oya2.appendChild(div_list[i]);
+        }
+        oya.style.display = 'none';
+    }
+    let doo = '2';
+    let doo2 = '';
+    function Change(){
+        let oya = document.getElementById('oya'+doo);
+        let oya2 = document.getElementById('oya' + doo2);
+        oya2.style.display = 'block';
+        if(doo == 2){
+            doo = '';
+            doo2 = '2';
+        }
+        else{
+            doo = '2';
+            doo2 = '';
+        }
+        if(oya.childElementCount > 0){
+            var t = [];
+            for(let i = 0; i < list_t.length; i++){
+                t.push(document.getElementById(list_t[i]));
+            }
+            let vv = oya.childElementCount;
+            let div_list = [];
+            for(let ia = 0; ia < vv; ia++){
+                let i3 = 0;
+                for(let ii = 0; ii < vv; ii++){
+                    if(list_card[ii][1] == ia){
+                        div_list.push(t[ii]);
+                    }
+                }
+            }
+            
+            for(let i = 0; i < vv ; i++){
+                oya2.appendChild(div_list[i]);
+            }
+            oya.style.display = 'none';
+        }
+    }
+    
+    function getCookie(name) {
+            var cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = jQuery.trim(cookies[i]);
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        var csrftoken = getCookie('csrftoken');
+
+        function csrfSafeMethod(method) {
+            // these HTTP methods do not require CSRF protection
+            return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+        }
+
+        $.ajaxSetup({
+            beforeSend: function (xhr, settings) {
+                if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                }
+            }
+        });
+
+    $('#fr').on('submit', function(e) {
+        e.preventDefault();
+        var csrf_token = getCookie("csrftoken");
+        $.ajax({
+            'url': '{% url "mqapp:ajax-list" %}',
+            'type': 'POST',
+            'data': {
+                'list': $('#kore').val(),
+            },
+            beforeSend: function(xhr, settings) {
+                if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                    xhr.setRequestHeader("X-CSRFToken", csrf_token);
+                }
+            },
+            'dataType': 'json',
+            
+        });
+    });
+
+    function Send(element){
+        let vv = element.parentElement.parentElement.parentElement.parentElement.children[0].children[0].textContent;
+        document.getElementById('text').innerHTML = vv + 'を本当に削除しますか？';
+        document.getElementById('ds').value = vv;
+    }
+
+    // ドラッグしている要素を格納する変数
+    let drag_item;
+    
+    // ドラッグが開始された時
+    document.addEventListener('dragstart', (event) => {
+      drag_item = event.target;
+      event.target.style.opacity = 0.6;
+    });
+    
+    // ドラッグが終了した時
+    document.addEventListener('dragend', (event) => {
+      event.target.style.opacity = 1;
+    });
+
+    document.addEventListener('dragover', (event) =>{
+      event.preventDefault();
+    });
+    
+    // ドロップ時の処理
+    window.addEventListener('drop', (event) => {
+        let e = event.target;
+      while(true){
+        if(e.id == 'child'){
+            e = e.parentElement;
+        }
+        else{
+            break;
+        }
+      }
+      if((e.id).includes('card')){
+        var e_1 = document.getElementById(drag_item.id);
+        var e_2 = document.getElementById(e.id);
+        let ted = 0, ted2 = 0;
+        let td = 0, td2 = 0;
+        for(let i = 0; i < list_card.length; i++){
+            if(list_card[i][0] == drag_item.id){
+                ted = list_card[i][1];
+                td = i;
+            }
+            if(list_card[i][0] == e.id){
+                ted2 = list_card[i][1];
+                td2 = i;
+            }
+        }
+        let nol = [];
+        if(ted > ted2){
+            for(let i = ted2; i < ted; i++){
+                var target = list_card.filter( e => e[1] === String(i) );
+                nol.push(parseInt(target[0][0].split('card')[1]))
+            }
+            for(let i = 0; i < nol.length; i++){
+                let suti = parseInt(list_card[nol[i]][1]);
+                list_card[nol[i]][1] = String(suti + 1);
+            }
+        }
+        else{
+            for(let i = ted2; i > ted; i--){
+                var target = list_card.filter( e => e[1] === String(i) );
+                nol.push(parseInt(target[0][0].split('card')[1]))
+            }
+            for(let i = 0; i < nol.length; i++){
+                let suti = parseInt(list_card[nol[i]][1]);
+                list_card[nol[i]][1] = String(suti - 1);
+            }
+        }
+        list_card[td][1] = ted2;
+
+        let ii2 = list_card.flat();
+        for(let ii3 = 0; ii3 < list_card.length; ii3++){
+            ii2.splice(ii3,1);
+        }
+        let imadake = ii2.join(',');
+        
+        document.getElementById('kore').value = imadake;
+        document.getElementById("fr2").click();
+
+        Change();
+      }
+      
+      event.preventDefault();
+      drag_item = null;
+    }, false);
+</script>
+
+{% endblock %}

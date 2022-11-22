@@ -1,0 +1,165 @@
+{% extends "mqapp/base.html" %}
+{% block title %}解く{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="card mt-3 mx-auto" style="width: 60vw;">
+        <div class="card-header">
+            <div class="row">
+                <div class="col-md-10 col-sm-12 my-auto">
+                    <h2 style="font-size: 2vmax;">{{en}}</h2>
+                </div>
+                <div class="col-md-2 col-sm-12 my-auto">
+                    <a href="/net_post/" class="btn btn-secondary float-right" style="white-space: nowrap;" >戻る</a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <h2 id="nm" class="text-center" style="font-size: 1.7vmax;"></h2>
+            <table class="table table-bordered" id="tb">
+                <thead class="thead-dark">
+                <tr>
+                    <th>間違えた問題</th>
+                    <th>解答</th>
+                </tr>
+                </thead>
+                <tbody>
+                    
+                </tbody>
+            </table>
+            <h3 id="question" style="font-size: 3.4vmax;"></h3>
+            <br>
+            <h4 id="qa" style="font-size: 2vmax;"></h4>
+            <h4 id="qa2" style="font-size: 2.5vmax;"></h4>
+        </div>
+        <div class="card-footer">
+            <div class="row">
+                <div class="col-md-10 my-auto">
+                    <input type="text" class="form-control" id="it">
+                </div>
+                <div class="col-md-2">
+                    <input type="button" class="btn btn-info" value="答える" onclick="Send()" id = 'kota'>
+                </div>
+            </div>
+        </div>  
+    </div>
+</div>
+
+<h1 id="ft">{{ tab }}</h1> 
+
+<script>
+    let EndFlag = false;
+    let it = document.getElementById('it');
+    let tb = document.getElementById('tb');
+    tb.style.visibility = 'hidden';
+    let ft = document.getElementById('ft').textContent;
+    document.getElementById('ft').style.visibility = 'hidden';
+    let result = ft.split('@');
+    let kr1 = result[1].split('$');
+    let kr2 = result[0].split('$');
+    let miss = [];
+    let miss2 = [];
+
+    let text = document.getElementById('question');
+    let r = 0;
+    let rk = 0;
+
+    let s = 0,so = 0;
+
+    let qa = document.getElementById("qa");
+    let qa2 = document.getElementById("qa2");
+
+    let nm = document.getElementById('nm');
+
+    if(kr1.length > kr2.length){
+        kr2.push('null');
+    }
+
+    function Question(){
+        nm.innerHTML = '残り' + kr1.length + '問';
+        s = 0;
+        qa.style.display = "none";
+        qa2.style.display = "none";
+        it.value = '';
+        if (kr1.length > 1){
+            while(r == rk){
+                r = Math.floor(Math.random() * kr1.length);
+            }
+        }
+        else if(kr1.length == 1){
+            r = Math.floor(Math.random() * kr1.length);
+        }
+        else if(kr1.length == 0){
+            tb.style.visibility = 'visible';
+            document.getElementById('kota').style.visibility = 'hidden';
+            EndFlag = true;
+            
+            text.innerHTML = '終了';
+            nm.style.display = 'none';
+            for(let i = 0; i < miss.length; i++){
+                var row = tb.insertRow(-1);
+                tt1 = row.insertCell(0);
+                tt2 = row.insertCell(1);
+                tt1.innerHTML = miss[i];
+                tt2.innerHTML = miss2[i];
+            }
+            return
+        }
+        
+        rk = r;
+        text.innerHTML = kr1[r];
+
+    }
+
+    
+
+    function Answer(){
+        qa.style.display = "block";
+        qa2.style.display = "block";
+        if(kr2[r] == it.value){
+            qa.innerHTML = '正解';
+            qa.style.color = "red";
+            qa2.innerHTML = "";
+            kr1.splice(r,1);
+            kr2.splice(r,1);
+        }
+        else{
+            qa.style.color = "blue";
+            qa.innerHTML = "不正解";
+            qa2.innerHTML = kr2[r];
+
+            let flag = false;
+            for(let i = 0; i < miss.length; i++){
+                if(miss[i] == kr1[r]){
+                    flag = true;
+                }
+            }
+            if(flag == false){
+                miss.push(kr1[r]);
+                miss2.push(kr2[r]);
+            }
+        }
+        s = 1;
+    }
+
+    Question();
+
+    function Send(){
+        if(s == 0 && EndFlag == false){
+            Answer();
+        }
+        else if(s == 1 && EndFlag == false){
+            Question();
+        }
+    }
+
+    document.body.addEventListener('keydown', event =>{
+        if(event.key == 'Enter' && s == 0 && EndFlag == false){
+            Answer();
+        }
+        else if(event.key == 'Enter' && s == 1 && EndFlag == false){
+            Question();
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,72 @@
+{% extends "mqapp/base.html" %}
+{% block title %}みんなの投稿{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="card mt-3 mx-auto" style="width: 60vw;">
+        <div class="card-header">
+            <div class="row">
+                <div class="col-md-10">
+                    <h4 style="font-size: 2vmax;white-space: nowrap;">投稿された問題集</h4>
+                </div>
+            </div>
+        </div>
+        <div class="card-body bg-light">
+            <div class="row" id = 'oya'>
+            {% for bt in title %}
+                <div class="card my-4 col-md-3 col-sm-6 col-xs-12">
+                    <div class="card-header">
+                        <h1 style="font-size: 1.5vmax;" id="{{ forloop.counter0 }}"></h1>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-12 col-sm-12">
+                                <h6 style="font-size: 1.7vmax;">{{ bt }}</h6>
+                            </div>
+                            <div class = "col-md-12 col-sm-12">
+                                <ul class="dropdown">
+                                    <button class="dropdown-toggle btn btn-outline-primary float-right" data-toggle="dropdown">メニュー</button>
+                                        <ul class="dropdown-menu">
+                                            <a class="text-info mx-1" href="/play_n/{{ bt }}@$&{{ forloop.counter0 }}/t" id="buta{{forloop.counter0}}">記述</a>
+                                            <a class="text-info mx-1" href="/play_m_n/{{ bt }}@$&{{ forloop.counter0 }}/m" id="kame{{forloop.counter0}}">〇✕</a>
+                                            <a href="/edit_n/{{ bt }}@$&{{ forloop.counter0 }}" class="btn btn-success">中身</a>
+                                        </ul>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<p id="usn">{{ user_name }}</p>
+<p id = 'ttt'>{{ type }}</p>
+
+<script type="text/javascript">
+    un = document.getElementById('usn').textContent;
+    ttt = document.getElementById('ttt');
+    ttt.style.display = 'none';
+    ttt = ttt.textContent.split(',');
+    document.getElementById('usn').style.display = 'none';
+    un = un.split(",");
+    for(let i = 0; i < un.length - 1; i++){
+        document.getElementById(i).innerHTML = '作者:' + un[i];
+    }
+
+    let oya = document.getElementById('oya');
+    if(oya.childElementCount > 0){
+        for(let i = 0; i < oya.childElementCount; i++){
+            if(ttt[i] == '2'){
+                document.getElementById('kame'+String(i)).style.display = 'none';
+            }
+            else if(ttt[i] == '3'){
+                document.getElementById('buta'+String(i)).style.display = 'none';
+            }
+        }
+    }
+</script>
+
+{% endblock %}
