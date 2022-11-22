@@ -25,7 +25,7 @@ SECRET_KEY = 'oahvd@r!0sqm+$&xhp9=g)%mx9265ga)=-2rbhx9&kug9)2t_&'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1']
+ALLOWED_HOSTS = ['127.0.0.1','expython-production.up.railway.app']
 
 
 # Application definition
